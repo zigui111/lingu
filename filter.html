@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>音韵学学习工具 — 中古音数字化研习平台</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+  <!-- ========== 顶部导航 ========== -->
+  <header class="app-header">
+    <div class="app-title">
+      <span class="icon">&#119070;</span>
+      音韵学学习工具
+    </div>
+    <nav class="nav-tabs">
+      <button class="nav-tab" data-view="detail">&#128270; 音韵详情</button>
+      <button class="nav-tab" data-view="fanqie">&#128269; 反切搜索</button>
+      <button class="nav-tab active" data-view="browser">&#128202; 韵书浏览器</button>
+    </nav>
+    <div class="header-actions">
+      <button class="btn-action" id="btn-open-bookmarks">
+        &#11088; 生字本 <span id="bookmark-count">0</span>
+      </button>
+      <button class="btn-action" id="btn-open-settings" title="设置">&#9881; 设置</button>
+    </div>
+  </header>
+
+  <!-- ========== 加载遮罩 ========== -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">正在加载音韵数据……</div>
+  </div>
+
+  <!-- ========== 缓存授权提示 ========== -->
+  <div class="cache-prompt-overlay" id="cache-prompt" style="display:none;">
+    <div class="cache-prompt">
+      <div class="cache-prompt-title">是否允许本地数据缓存？</div>
+      <div class="cache-prompt-text">允许后，查询过的汉字详情和拟音数据会保存在本地，下次打开更快；之后可以在右上角「设置」中随时开关。</div>
+      <div class="cache-prompt-actions">
+        <button class="btn-filter btn-filter-reset" id="btn-cache-decline">暂不缓存</button>
+        <button class="btn-filter btn-filter-apply" id="btn-cache-accept">允许缓存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 主内容区 ========== -->
+  <main class="app-main">
+    <div class="view active" id="view-browser">
+      <div class="browser-layout">
+
+        <!-- 筛选面板 -->
+        <aside class="filter-panel" id="filter-panel">
+          <h3 style="font-size:1rem;margin-bottom:var(--space-lg);color:var(--color-text);">筛选条件</h3>
+          <div class="filter-search-wrap">
+            <input type="text" class="filter-search" id="filter-search" placeholder="搜索筛选项" autocomplete="off" />
+          </div>
+
+          <div class="filter-group collapsed" id="filter-initial">
+            <button type="button" class="filter-group-title filter-group-toggle" aria-expanded="false">
+              <span class="filter-caret" aria-hidden="true">&#9656;</span>
+              声母 <span class="filter-group-count"></span>
+            </button>
+            <div class="filter-group-body">
+              <div class="filter-chips" id="chips-initial"></div>
+            </div>
+          </div>
+
+          <div class="filter-group collapsed" id="filter-final">
+            <button type="button" class="filter-group-title filter-group-toggle" aria-expanded="false">
+              <span class="filter-caret" aria-hidden="true">&#9656;</span>
+              韵母 <span class="filter-group-count"></span>
+            </button>
+            <div class="filter-group-body">
+              <div class="filter-chips" id="chips-final"></div>
+            </div>
+          </div>
+
+          <div class="filter-group collapsed" id="filter-deng">
+            <button type="button" class="filter-group-title filter-group-toggle" aria-expanded="false">
+              <span class="filter-caret" aria-hidden="true">&#9656;</span>
+              等 <span class="filter-group-count"></span>
+            </button>
+            <div class="filter-group-body">
+              <div class="filter-chips" id="chips-deng"></div>
+            </div>
+          </div>
+
+          <div class="filter-group collapsed" id="filter-hu">
+            <button type="button" class="filter-group-title filter-group-toggle" aria-expanded="false">
+              <span class="filter-caret" aria-hidden="true">&#9656;</span>
+              呼 <span class="filter-group-count"></span>
+            </button>
+            <div class="filter-group-body">
+              <div class="filter-chips" id="chips-hu"></div>
+            </div>
+          </div>
+
+          <div class="filter-group collapsed" id="filter-tone">
+            <button type="button" class="filter-group-title filter-group-toggle" aria-expanded="false">
+              <span class="filter-caret" aria-hidden="true">&#9656;</span>
+              声调 <span class="filter-group-count"></span>
+            </button>
+            <div class="filter-group-body">
+              <div class="filter-chips" id="chips-tone"></div>
+            </div>
+          </div>
+
+          <div class="filter-group collapsed" id="filter-she">
+            <button type="button" class="filter-group-title filter-group-toggle" aria-expanded="false">
+              <span class="filter-caret" aria-hidden="true">&#9656;</span>
+              韵摄 <span class="filter-group-count"></span>
+            </button>
+            <div class="filter-group-body">
+              <div class="filter-chips" id="chips-she"></div>
+            </div>
+          </div>
+
+          <div class="filter-actions">
+            <button class="btn-filter btn-filter-reset" id="btn-filter-reset">清除</button>
+            <button class="btn-filter btn-filter-apply" id="btn-filter-apply">筛选</button>
+          </div>
+        </aside>
+
+        <!-- 结果区 -->
+        <div class="result-area">
+          <div class="result-header">
+            <div class="result-count" id="result-count">共 <strong>0</strong> 条结果</div>
+            <div class="result-actions">
+              <button class="btn-toolbar primary" id="btn-batch-play">&#9654; 顺序播放</button>
+              <button class="btn-toolbar" id="btn-export-csv">&#128229; 导出 CSV</button>
+              <button class="btn-toolbar" id="btn-copy-table">&#128203; 复制表格</button>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table" id="data-table">
+              <thead>
+                <tr>
+                  <th>字头</th>
+                  <th>反切</th>
+                  <th>声母</th>
+                  <th>韵母</th>
+                  <th>等</th>
+                  <th>呼</th>
+                  <th>声调</th>
+                  <th>IPA</th>
+                  <th>韵摄</th>
+                  <th>听音</th>
+                </tr>
+              </thead>
+              <tbody id="table-body">
+                <tr><td colspan="10" style="text-align:center;padding:var(--space-2xl);color:var(--color-text-muted);">
+                  请选择筛选条件后点击「筛选」
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========== 生字本侧边栏 ========== -->
+  <div class="bookmark-panel" id="bookmark-panel">
+    <div class="bookmark-header">
+      <div class="bookmark-title">&#11088; 我的生字本</div>
+      <button class="btn-close" id="btn-close-bookmarks">&times;</button>
+    </div>
+    <div class="bookmark-search-wrap">
+      <input type="text" class="bookmark-search" id="bookmark-search" placeholder="按字或 UTF-8 编码搜索" autocomplete="off" />
+    </div>
+    <div id="bookmark-list"><div class="bookmark-empty">还没有收藏任何生字</div></div>
+  </div>
+
+  <!-- ========== 设置侧边栏 ========== -->
+  <div class="settings-panel" id="settings-panel">
+    <div class="settings-header">
+      <div class="settings-title">&#9881; 设置</div>
+      <button class="btn-close" id="btn-close-settings">&times;</button>
+    </div>
+    <div class="settings-section">
+      <div class="settings-row">
+        <div class="settings-info">
+          <div class="settings-label">本地数据缓存</div>
+          <div class="settings-desc">开启后，已加载的详情与拟音数据会保存在本地，方便下次快速查询</div>
+        </div>
+        <label class="switch" title="是否允许缓存数据">
+          <input type="checkbox" id="cache-toggle" />
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 页脚 ========== -->
+  <footer class="app-footer">
+    <div>音韵学学习工具 v2.0 &#8226; 中古音数字化研习平台 &#8226; 数据来源：《广韵》</div>
+    <div class="filing-links">
+      <span class="filing-item" id="icp-record">京ICP备2023021416号</span>
+      <span class="filing-item" id="gongan-record">京公网安备11010902000981号</span>
+    </div>
+  </footer>
+
+  <!-- ========== 脚本 ========== -->
+  <script src="./app.js"></script>
+</body>
+</html>

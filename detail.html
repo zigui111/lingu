@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>音韵学学习工具 — 中古音数字化研习平台</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+  <!-- ========== 顶部导航 ========== -->
+  <header class="app-header">
+    <div class="app-title">
+      <span class="icon">&#119070;</span>
+      音韵学学习工具
+    </div>
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-view="detail">&#128270; 音韵详情</button>
+      <button class="nav-tab" data-view="fanqie">&#128269; 反切搜索</button>
+      <button class="nav-tab" data-view="browser">&#128202; 韵书浏览器</button>
+    </nav>
+    <div class="header-actions">
+      <button class="btn-action" id="btn-open-bookmarks">
+        &#11088; 生字本 <span id="bookmark-count">0</span>
+      </button>
+      <button class="btn-action" id="btn-open-settings" title="设置">&#9881; 设置</button>
+    </div>
+  </header>
+
+  <!-- ========== 加载遮罩 ========== -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">正在加载音韵数据……</div>
+  </div>
+
+  <!-- ========== 缓存授权提示 ========== -->
+  <div class="cache-prompt-overlay" id="cache-prompt" style="display:none;">
+    <div class="cache-prompt">
+      <div class="cache-prompt-title">是否允许本地数据缓存？</div>
+      <div class="cache-prompt-text">允许后，查询过的汉字详情和拟音数据会保存在本地，下次打开更快；之后可以在右上角「设置」中随时开关。</div>
+      <div class="cache-prompt-actions">
+        <button class="btn-filter btn-filter-reset" id="btn-cache-decline">暂不缓存</button>
+        <button class="btn-filter btn-filter-apply" id="btn-cache-accept">允许缓存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 主内容区 ========== -->
+  <main class="app-main">
+
+    <!-- ======== 界面一：音韵详情页 ======== -->
+    <div class="view active" id="view-detail">
+      <section class="search-section">
+        <div class="search-box">
+          <input type="text" class="search-input" id="search-input"
+                 placeholder="输入单个汉字（如「東」）……"
+                 autocomplete="off" />
+          <button class="btn-search" id="btn-search">检索</button>
+        </div>
+        <div class="search-hint">按汉字检索音韵详情；反切检索请使用「反切搜索」</div>
+      </section>
+
+      <div id="detail-result">
+        <div class="empty-state" id="detail-empty">
+          <span class="icon">&#128218;</span>
+          <p>在上方搜索框中输入一个汉字<br />即可查看该字的音韵详情</p>
+        </div>
+        <div class="result-container" id="detail-content" style="display:none;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========== 生字本侧边栏 ========== -->
+  <div class="bookmark-panel" id="bookmark-panel">
+    <div class="bookmark-header">
+      <div class="bookmark-title">&#11088; 我的生字本</div>
+      <button class="btn-close" id="btn-close-bookmarks">&times;</button>
+    </div>
+    <div class="bookmark-search-wrap">
+      <input type="text" class="bookmark-search" id="bookmark-search" placeholder="按字或 UTF-8 编码搜索" autocomplete="off" />
+    </div>
+    <div id="bookmark-list"><div class="bookmark-empty">还没有收藏任何生字</div></div>
+  </div>
+
+  <!-- ========== 设置侧边栏 ========== -->
+  <div class="settings-panel" id="settings-panel">
+    <div class="settings-header">
+      <div class="settings-title">&#9881; 设置</div>
+      <button class="btn-close" id="btn-close-settings">&times;</button>
+    </div>
+    <div class="settings-section">
+      <div class="settings-row">
+        <div class="settings-info">
+          <div class="settings-label">本地数据缓存</div>
+          <div class="settings-desc">开启后，已加载的详情与拟音数据会保存在本地，方便下次快速查询</div>
+        </div>
+        <label class="switch" title="是否允许缓存数据">
+          <input type="checkbox" id="cache-toggle" />
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 页脚 ========== -->
+  <footer class="app-footer">
+    <div>音韵学学习工具 v2.0 &#8226; 中古音数字化研习平台 &#8226; 数据来源：《广韵》</div>
+    <div class="filing-links">
+      <span class="filing-item" id="icp-record">京ICP备2023021416号</span>
+      <span class="filing-item" id="gongan-record">京公网安备 11010902000981号</span>
+    </div>
+  </footer>
+
+  <!-- ========== 脚本 ========== -->
+  <script src="./app.js"></script>
+</body>
+</html>
